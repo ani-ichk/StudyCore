@@ -1,0 +1,13 @@
+[project]
+name = "StudyCore"
+version = "0.1.0"
+description = "StudyCore"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bcrypt>=5.0.0",
+    "numpy>=2.4.2",
+    "opencv-python>=4.13.0.92",
+    "qrcode>=8.2",
+    "sqlalchemy>=2.0.48",
+]
