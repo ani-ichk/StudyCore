@@ -146,6 +146,44 @@ class QRCodeService:
 
         return True, data
 
+    @staticmethod
+    def decode_qr_from_image_bytes(image_bytes: bytes) -> Optional[str]:
+        """Декодирование данных QR-кода из исходных байтов изображения.
+
+        Требуется OpenCV (cv2). Возвращает декодированную строку или None, если данные не найдены.
+        """
+        if not OPENCV_AVAILABLE:
+            raise ImportError('Для сканирования QR-кодов требуется OpenCV (установите пакет opencv-python через pip).')
+
+        try:
+            nparr = np.frombuffer(image_bytes, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            if img is None:
+                return None
+
+            detector = cv2.QRCodeDetector()
+            data, points, _ = detector.detectAndDecode(img)
+            return data if data else None
+        except Exception:
+            return None
+
+    @staticmethod
+    def decode_qr_from_image_path(path: str) -> Optional[str]:
+        """Расшифровка данных QR-кода из пути к файлу изображения."""
+        if not OPENCV_AVAILABLE:
+            raise ImportError('Для сканирования QR-кодов требуется OpenCV (установите пакет opencv-python через pip).')
+
+        try:
+            img = cv2.imread(path)
+            if img is None:
+                return None
+
+            detector = cv2.QRCodeDetector()
+            data, points, _ = detector.detectAndDecode(img)
+            return data if data else None
+        except Exception:
+            return None
+
 
 class QRCodeGenerator:
     """Генератор QR-кодов для пользователей системы"""

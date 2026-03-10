@@ -1,4 +1,4 @@
-from models import (
+from .models import (
     Base, User, Role, UserRole, QRCode, Parent, Student, StudentParent,
     Class, Subject, TeacherSubject, Homework, AttendanceLog, Notification,
     MealAccount, MealTransaction, Book, LibraryLoan, Grade, Room, Key,
@@ -7,7 +7,7 @@ from models import (
 )
 
 # Экспортируем менеджер
-from db_manager import DatabaseManager
+from .db_manager import DatabaseManager
 
 # Экспортируем методы как модули
 from . import add_methods

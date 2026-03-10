@@ -1,5 +1,5 @@
-from models import User, UserRole, Role
-from security import PasswordHasher
+from .models import User, UserRole, Role
+from .security import PasswordHasher
 
 
 def authenticate_user(session, login, password, role_name=None):
