@@ -5,24 +5,19 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict
 
+import bcrypt
 
-from models import User
-from auth_methods import authenticate_user
-from add_methods import add_user_with_roles
-from read_methods import get_user_roles
-from security import PasswordHasher
-from qr_service import QRCodeGenerator
-from db_manager import DatabaseManager
+from server.data.db.models import User
+from server.data.db.auth_methods import authenticate_user
+from server.data.db.add_methods import add_user_with_roles
+from server.data.db.read_methods import get_user_roles
+from server.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from server.data.db.qr_service import QRCodeGenerator
+from server.data.db.main import db_manager
 
 router = APIRouter(prefix="/auth", tags=["Авторизация и пользователи"])
 
-SECRET_KEY = "school-system-very-secret-key-2026-change-me-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-db_manager = DatabaseManager()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def get_db():
     db = db_manager.get_session()
@@ -73,11 +68,33 @@ def require_roles(*required: str):
 
 #эндпоинты
 
+def _verify_legacy_bcrypt(password: str, hashed: str) -> bool:
+    """Проверка старого формата хэша "bcrypt$<salt>$$<hash>"."""
+    try:
+        if not hashed.startswith("bcrypt$"):
+            return False
+
+        raw = hashed[len("bcrypt$"):]
+        parts = raw.split("$$", 1)
+        if len(parts) != 2:
+            return False
+
+        bcrypt_hash = parts[1]
+        if not bcrypt_hash.startswith("$"):
+            bcrypt_hash = "$" + bcrypt_hash
+        return bcrypt.checkpw(password.encode("utf-8"), bcrypt_hash.encode("utf-8"))
+    except Exception:
+        return False
+
+
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
+
     if not user:
-        raise HTTPException(401, "Неверный логин или пароль")
+        user = db.query(User).filter_by(login=form_data.username).first()
+        if not user or not _verify_legacy_bcrypt(form_data.password, user.password):
+            raise HTTPException(401, "Неверный логин или пароль")
 
     roles = [r.name for r in get_user_roles(db, user.id)]
 

@@ -55,6 +55,8 @@ class User(Base):
     name = Column(String(100), nullable=False)
     patronymic = Column(String(100))
     phone = Column(String(20))
+    email = Column(String(255), unique=True, nullable=True)
+    is_active = Column(Boolean, default=True)
 
     # Связи
     roles = relationship("Role", secondary="user_roles", back_populates="users")
@@ -133,7 +135,7 @@ class Student(Base):
     parents = relationship("Parent", secondary="student_parent", back_populates="students")
     meal_account = relationship("MealAccount", uselist=False, back_populates="student")
     grades = relationship("Grade", back_populates="student")
-    homeworks = relationship("Homework", back_populates="class_")
+    homeworks = relationship("Homework", back_populates="student")
 
 
 class StudentParent(Base):
@@ -194,6 +196,7 @@ class Homework(Base):
 
     id = Column(Integer, primary_key=True)
     class_id = Column(Integer, ForeignKey('classes.id'), nullable=False)
+    student_id = Column(Integer, ForeignKey('students.id'), nullable=True)
     subject_id = Column(Integer, ForeignKey('subjects.id'), nullable=False)
     teacher_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     description = Column(Text, nullable=False)
@@ -202,6 +205,7 @@ class Homework(Base):
 
     # Связи
     class_ = relationship("Class", back_populates="homeworks")
+    student = relationship("Student", back_populates="homeworks")
     subject = relationship("Subject", back_populates="homeworks")
     teacher = relationship("User", back_populates="homeworks")
 

@@ -1,5 +1,11 @@
 # StudyCore
 
+# Backend - FastAPI
+Как работать с FastAPI - 
+Для запуска локального сервера нужно запустить виртуальное окружение в консоли и ввести эту команду:
+python -m uvicorn server.main:app --reload
+
+
 # Работа с uv
 Как установить uv на ваш компьютер: https://docs.astral.sh/uv/getting-started/installation/
 
