@@ -1,4 +1,4 @@
-from .models import User, UserRole, Role
+from server.models import User, UserRole, Role
 from .security import PasswordHasher
 
 

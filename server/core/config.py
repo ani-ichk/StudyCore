@@ -9,9 +9,15 @@ BASE_DIR: Final[Path] = Path(__file__).resolve().parent.parent
 
 # --- Настройки БД ---
 DB_FILENAME: Final[str] = "school_system.db"
-DB_DIR: Final[Path] = BASE_DIR / "data" / "db"
+DB_DIR: Final[Path] = BASE_DIR / "data" 
 DB_PATH: Final[Path] = DB_DIR / DB_FILENAME
 DB_URL: Final[str] = f"sqlite:///{DB_PATH}"
+
+# -- Qr-коды --
+
+
+# -- Шифрование паролей --
+
 
 # --- Токены / авторизация ---
 SECRET_KEY: Final[str] = "school-system-very-secret-key-2026-change-me-in-production"

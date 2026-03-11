@@ -2,10 +2,8 @@ import qrcode
 from io import BytesIO
 import base64
 import secrets
-import string
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
-import uuid
 
 try:
     import cv2
@@ -198,38 +196,37 @@ class QRCodeGenerator:
         Returns:
             Словарь с данными QR-кода
         """
-        from .models import QRCode
+        from server.models import QRCode
 
         session = self.db_manager.get_session()
-        try:
-            # Генерируем данные
-            qr_data = QRCodeService.generate_qr_data(user_id, purpose)
 
-            # Создаем запись в БД
-            qr_record = QRCode(
-                user_id=user_id,
-                code=qr_data,
-                expires_at=datetime.now() + timedelta(minutes=5)
-            )
+        # Генерируем данные
+        qr_data = QRCodeService.generate_qr_data(user_id, purpose)
 
-            session.add(qr_record)
-            session.commit()
-            session.refresh(qr_record)
+        # Создаем запись в БД
+        qr_record = QRCode(
+            user_id=user_id,
+            code=qr_data,
+            expires_at=datetime.now() + timedelta(minutes=5)
+        )
 
-            # Генерируем изображение
-            img_bytes = QRCodeService.generate_qr_code_image(qr_data)
-            img_base64 = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+        session.add(qr_record)
+        session.commit()
+        session.refresh(qr_record)
 
-            return {
-                'id': qr_record.id,
-                'user_id': user_id,
-                'code': qr_data,
-                'image_base64': img_base64,
-                'expires_at': qr_record.expires_at.isoformat(),
-                'purpose': purpose
-            }
-        finally:
-            session.close()
+        # Генерируем изображение
+        img_bytes = QRCodeService.generate_qr_code_image(qr_data)
+        img_base64 = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+
+        return {
+            'id': qr_record.id,
+            'user_id': user_id,
+            'code': qr_data,
+            'image_base64': img_base64,
+            'expires_at': qr_record.expires_at.isoformat(),
+            'purpose': purpose
+        }
+        
 
     def validate_qr_code(self, qr_code: str) -> dict:
         """
@@ -238,82 +235,74 @@ class QRCodeGenerator:
         Returns:
             Словарь с результатом валидации
         """
-        from .models import QRCode, User
+        from server.models import QRCode, User
 
         session = self.db_manager.get_session()
-        try:
-            # Ищем QR-код в БД
-            qr_record = session.query(QRCode).filter_by(code=qr_code).first()
+        
+        # Ищем QR-код в БД
+        qr_record = session.query(QRCode).filter_by(code=qr_code).first()
 
-            if not qr_record:
-                return {
-                    'valid': False,
-                    'error': 'QR-код не найден'
-                }
-
-            # Проверяем срок действия
-            if qr_record.expires_at and qr_record.expires_at < datetime.now():
-                return {
-                    'valid': False,
-                    'error': 'QR-код просрочен',
-                    'user_id': qr_record.user_id
-                }
-
-            # Получаем информацию о пользователе
-            user = session.query(User).get(qr_record.user_id)
-
+        if not qr_record:
             return {
-                'valid': True,
-                'user_id': qr_record.user_id,
-                'user_name': user.name if user else 'Неизвестный',
-                'qr_id': qr_record.id,
-                'expires_at': qr_record.expires_at.isoformat() if qr_record.expires_at else None
+                'valid': False,
+                'error': 'QR-код не найден'
             }
-        finally:
-            session.close()
+
+        # Проверяем срок действия
+        if qr_record.expires_at and qr_record.expires_at < datetime.now():
+            return {
+                'valid': False,
+                'error': 'QR-код просрочен',
+                'user_id': qr_record.user_id
+            }
+
+        # Получаем информацию о пользователе
+        user = session.query(User).get(qr_record.user_id)
+
+        return {
+            'valid': True,
+            'user_id': qr_record.user_id,
+            'user_name': user.name if user else 'Неизвестный',
+            'qr_id': qr_record.id,
+            'expires_at': qr_record.expires_at.isoformat() if qr_record.expires_at else None
+        }
+    
 
     def get_active_qr_codes(self, user_id: int) -> list:
         """Получить активные QR-коды пользователя"""
-        from .models import QRCode
+        from server.models import QRCode
 
         session = self.db_manager.get_session()
-        try:
-            now = datetime.now()
-            qr_codes = session.query(QRCode).filter(
-                QRCode.user_id == user_id,
-                QRCode.expires_at > now
-            ).all()
+        
+        now = datetime.now()
+        qr_codes = session.query(QRCode).filter(
+            QRCode.user_id == user_id,
+            QRCode.expires_at > now
+        ).all()
 
-            result = []
-            for qr in qr_codes:
-                img_bytes = QRCodeService.generate_qr_code_image(qr.code)
-                img_base64 = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+        result = []
+        for qr in qr_codes:
+            img_bytes = QRCodeService.generate_qr_code_image(qr.code)
+            img_base64 = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
 
-                result.append({
-                    'id': qr.id,
-                    'code': qr.code,
-                    'image_base64': img_base64,
-                    'expires_at': qr.expires_at.isoformat() if qr.expires_at else None
-                })
+            result.append({
+                'id': qr.id,
+                'code': qr.code,
+                'image_base64': img_base64,
+                'expires_at': qr.expires_at.isoformat() if qr.expires_at else None
+            })
 
-            return result
-        finally:
-            session.close()
+        return result
 
     def invalidate_qr_code(self, qr_id: int) -> bool:
         """Аннулировать QR-код"""
-        from .models import QRCode
+        from server.models import QRCode
 
         session = self.db_manager.get_session()
-        try:
-            qr_record = session.query(QRCode).get(qr_id)
-            if qr_record:
-                qr_record.expires_at = datetime.now() - timedelta(minutes=1)
-                session.commit()
-                return True
-            return False
-        except Exception:
-            session.rollback()
-            return False
-        finally:
-            session.close()
+        qr_record = session.query(QRCode).get(qr_id)
+        if qr_record:
+            qr_record.expires_at = datetime.now() - timedelta(minutes=1)
+            session.commit()
+            return True
+        return False
+    

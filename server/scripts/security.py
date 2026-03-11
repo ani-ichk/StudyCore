@@ -1,8 +1,7 @@
 import bcrypt
-import hashlib
 import secrets
 import string
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class PasswordHasher:

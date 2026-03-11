@@ -1,6 +1,6 @@
 import hashlib
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 def hash_password(password: str) -> str:

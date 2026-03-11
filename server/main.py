@@ -1,16 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
-from server.api import router as api_router
-from server.data.db.seed import init_db
+from api import router as api_router
 
-app = FastAPI(title="Campus API")
+app = FastAPI(title="Books and Movies API")
 app.include_router(api_router)
-
-
-@app.on_event("startup")
-def on_startup():
-    """Инициализируем БД при старте сервера"""
-    init_db()
 
 
 @app.get("/")
@@ -22,4 +15,4 @@ def read_root():
 
 
 if __name__ == "__main__":
-    uvicorn.run("server.main:app", reload=True)
+    uvicorn.run("main:app", reload=True)

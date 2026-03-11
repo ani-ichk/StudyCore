@@ -1,5 +1,5 @@
 from datetime import datetime
-from .models import (
+from server.models import (
     User, Student, Parent, Grade, Homework,
     AttendanceLog, Notification, Schedule, MealTransaction,
     LibraryLoan, Class, Subject
