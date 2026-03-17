@@ -1,8 +1,8 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, Enum
 from sqlalchemy.orm import relationship
-from server.models.base import Base
-from server.models.enums import EventType
+from .base import Base
+from .enums import EventType
 
 
 class AttendanceLog(Base):

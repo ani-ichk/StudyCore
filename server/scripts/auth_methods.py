@@ -1,11 +1,11 @@
-from server.models import User, UserRole, Role
+from models import User, UserRole, Role
 from .security import PasswordHasher
 
 
 def authenticate_user(session, login, password, role_name=None):
     """Аутентификация пользователя с проверкой пароля и роли"""
     user = session.query(User).filter_by(login=login, is_active=True).first()
-
+    
     if user and PasswordHasher.verify_password(password, user.password):
         if role_name:
             # Проверяем, есть ли у пользователя указанная роль
@@ -22,7 +22,7 @@ def authenticate_user(session, login, password, role_name=None):
 def authenticate_user_by_email(session, email, password):
     """Аутентификация по email"""
     user = session.query(User).filter_by(email=email, is_active=True).first()
-
+    
     if user and PasswordHasher.verify_password(password, user.password):
         return user
     return None

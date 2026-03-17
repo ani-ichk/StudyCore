@@ -1,4 +1,4 @@
-from server.models import User, Grade, Notification, Student, MealTransaction, TransactionType
+from models import User, Grade, Notification, Student, MealTransaction, TransactionType
 
 
 def update_user(session, user_id, **kwargs):

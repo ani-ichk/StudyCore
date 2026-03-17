@@ -1,3 +1,4 @@
+import re
 import bcrypt
 import secrets
 import string
@@ -11,31 +12,25 @@ class PasswordHasher:
     def hash_password(password: str) -> str:
         """
         Хэширование пароля с использованием bcrypt
-        Возвращает строку в формате: algorithm$salt$hash
+        Возвращает строку в формате: $2b$12$...
         """
         # Генерируем соль и хэшируем пароль
         salt = bcrypt.gensalt(rounds=12)
         hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-
-        # Возвращаем в формате для хранения
-        return f"bcrypt${salt.decode('utf-8')}${hashed.decode('utf-8')}"
+        
+        # Возвращаем только хэш (bcrypt уже включает соль)
+        return hashed.decode('utf-8')
 
     @staticmethod
     def verify_password(password: str, hashed_password: str) -> bool:
         """Проверка пароля"""
         try:
-            # Извлекаем алгоритм, соль и хэш
-            parts = hashed_password.split('$')
-            if len(parts) != 3 or parts[0] != 'bcrypt':
-                # Для обратной совместимости с старыми паролями
-                return False
-
-            # Проверяем пароль
+            # Просто проверяем пароль с сохраненным хэшем
             password_bytes = password.encode('utf-8')
-            stored_hash = parts[2].encode('utf-8')
-
+            stored_hash = hashed_password.encode('utf-8')
+            
             return bcrypt.checkpw(password_bytes, stored_hash)
-        except Exception:
+        except Exception as e:
             return False
 
     @staticmethod
@@ -49,13 +44,15 @@ class PasswordHasher:
         """Проверка силы пароля"""
         if len(password) < 8:
             return False
-
-        has_upper = any(c.isupper() for c in password)
-        has_lower = any(c.islower() for c in password)
-        has_digit = any(c.isdigit() for c in password)
-        has_special = any(c in string.punctuation for c in password)
-
-        return has_upper and has_lower and has_digit and has_special
+        
+        has_upper = bool(re.search(r'[A-Z]', password))
+        has_lower = bool(re.search(r'[a-z]', password))
+        has_digit = bool(re.search(r'\d', password))
+        has_special = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
+        
+        # Требуем минимум 3 из 4 критериев для большей гибкости
+        criteria_met = sum([has_upper, has_lower, has_digit, has_special])
+        return criteria_met >= 3
 
 
 class TokenManager:

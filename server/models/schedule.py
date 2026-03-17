@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, Time
 from sqlalchemy.orm import relationship
-from server.models.base import Base
+from .base import Base
 
 
 class Schedule(Base):

@@ -1,8 +1,8 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Enum
 from sqlalchemy.orm import relationship
-from server.models.base import Base
-from server.models.enums import TransactionType
+from .base import Base
+from .enums import TransactionType
 
 
 class MealAccount(Base):

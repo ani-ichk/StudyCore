@@ -1,8 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
-from api import router as api_router
 
-app = FastAPI(title="Books and Movies API")
+from core.database import init_db
+from api import router as api_router
+from core.config import HOST_FAST_API, PORT_FAST_API
+
+app = FastAPI(title="StudyCore Campus API")
 app.include_router(api_router)
 
 
@@ -15,4 +18,10 @@ def read_root():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    init_db()
+    uvicorn.run(
+        "main:app", 
+        reload=True, 
+        host=HOST_FAST_API, 
+        port=PORT_FAST_API
+    )

@@ -1,4 +1,4 @@
-from server.models import User, Grade, Homework, Notification
+from models import User, Grade, Homework, Notification
 
 
 def delete_user(session, user_id):

@@ -1,9 +1,9 @@
-from server.models import (
+from models import (
     User, UserRole, Student, Parent, Grade, Homework,
     AttendanceLog, Notification, Schedule, NotificationType, Role, MealAccount, Class, Subject
 )
 from .read_methods import check_schedule_conflicts_simple
-from server.scripts.security import PasswordHasher
+from scripts.security import PasswordHasher
 
 
 def add_user(session, login, password, surname, name, patronymic=None,

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
-from server.models.base import Base
-from server.models.enums import RoomType
+from .base import Base
+from .enums import RoomType
 
 
 class Room(Base):
