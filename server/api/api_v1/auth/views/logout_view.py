@@ -56,8 +56,9 @@ async def logout_all_devices(
     # Удаляем cookie
     TokenService.clear_token_cookie(response)
     
-    # Здесь можно добавить логику инвалидации всех токенов
-    # Например, увеличить версию токена в БД
+    # Инвалидируем все токены пользователя
+    current_user.token_version += 1
+    db.commit()
     
     return {
         "message": "Выполнен выход со всех устройств",

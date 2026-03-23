@@ -67,24 +67,6 @@ async def register_user(
             email=user_data.email
         )
         
-        # Создаем дополнительные записи в зависимости от ролей
-        if "student" in user_data.role_names:
-            # Для студента нужно указать класс (в реальном приложении получаем из запроса)
-            class_id = 1  # Временное значение
-            student = add_student_with_account(db, user.id, class_id, initial_balance=100.0)
-            
-        if "parent" in user_data.role_names:
-            parent = add_parent(db, user.id)
-            
-        # Если пользователь и студент, и родитель (тьютор), создаем обе записи
-        if "teacher" in user_data.role_names:
-            # Для учителя дополнительные настройки
-            pass
-            
-        if "admin" in user_data.role_names:
-            # Для администратора дополнительные права
-            pass
-        
         db.commit()
         
         # Получаем обновленного пользователя со всеми связями

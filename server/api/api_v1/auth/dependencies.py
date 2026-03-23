@@ -121,6 +121,15 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    # Проверяем версию токена для инвалидации сессий
+    token_version = payload.get("token_version", 1)
+    if user.token_version != token_version:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен недействителен (сессия инвалидирована)",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     return user
 
 

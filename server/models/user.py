@@ -33,3 +33,5 @@ class User(Base):
     # Для студенческой роли
     student_profile = relationship("Student", uselist=False, back_populates="user")
 
+    # Версия токена для аннулирования выхода из системы
+    token_version = Column(Integer, default=1, nullable=False)

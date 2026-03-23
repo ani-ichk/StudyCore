@@ -71,7 +71,7 @@ async def get_user_permissions(
     """
     user_roles = [role.name for role in current_user.roles]
     
-    # Определяем права на основе ролей
+    # Определяем права на основе ролей, можно дополнить
     permissions = {
         "can_view_users": "admin" in user_roles or "teacher" in user_roles,
         "can_edit_users": "admin" in user_roles,

@@ -14,7 +14,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    role_names: List[str] = ["student"]
+    role_names: List[str]
 
 
 class UserResponse(UserBase):

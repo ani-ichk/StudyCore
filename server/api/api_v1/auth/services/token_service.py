@@ -56,6 +56,7 @@ class TokenService:
         
         payload = {
             "sub": str(user_id),
+            "token_version": 1,
             "exp": expire,
             "iat": datetime.utcnow(),
             "token_type": "refresh"
@@ -180,5 +181,6 @@ class TokenService:
             "user_id": user.id,
             "roles": [role.name for role in user.roles],
             "name": f"{user.surname} {user.name}",
-            "email": user.email
+            "email": user.email,
+            "token_version": getattr(user, 'token_version', 1)
         }
