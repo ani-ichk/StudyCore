@@ -2,14 +2,14 @@
 
 # Backend - FastAPI
 Структура проекта:
-server/
-├── main.py                 # Точка входа, создание приложения
-├── api/                    # Слой API
-├── core/                   # Ядро приложения
-├── crud/                   # Операции с БД (Create, Read, Update, Delete)
-├── models/                 # Модели SQLAlchemy (таблицы)
-├── schemas/                # Pydantic схемы (валидация)
-└── scripts/                # Вспомогательные утилиты
+- server/
+- ├── main.py                 # Точка входа, создание приложения
+- ├── api/                    # Слой API
+- ├── core/                   # Ядро приложения
+- ├── crud/                   # Операции с БД (Create, Read, Update, Delete)
+- ├── models/                 # Модели SQLAlchemy (таблицы)
+- ├── schemas/                # Pydantic схемы (валидация)
+- └── scripts/                # Вспомогательные утилиты
 
 Как работать с FastAPI 
 - Для запуска локального сервера нужно запустить файл main.py в папке server.
