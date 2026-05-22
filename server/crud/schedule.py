@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from models.schedule import Schedule
 from server.schemas.schedule import ScheduleCreate, ScheduleUpdate
 from server.models.schedule import Schedule
 
