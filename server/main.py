@@ -4,12 +4,10 @@ from fastapi import FastAPI
 from core.database import init_db
 from api import router as api_router
 from core.config import HOST_FAST_API, PORT_FAST_API
-from api.endpoints.schedule import router as schedule_router
 
 
 app = FastAPI(title="StudyCore Campus API")
 app.include_router(api_router)
-app.include_router(schedule_router)
 
 @app.get("/")
 def read_root():
