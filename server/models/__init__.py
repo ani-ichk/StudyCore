@@ -13,7 +13,7 @@ from .meal import MealAccount, MealTransaction
 from .book import Book, LibraryLoan
 from .grade import Grade
 from .room import Room
-from .key import Key, KeyAllowedRole, KeyLog
+from .key import Key, KeyIssue
 from .schedule import Schedule
 from .qr_code import QRCode
 from .enums import NotificationType, EventType, RoomType, TransactionType

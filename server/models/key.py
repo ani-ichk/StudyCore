@@ -1,44 +1,29 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime
 from .base import Base
 
-
 class Key(Base):
-    """Таблица ключей"""
-    __tablename__ = 'keys'
+    __tablename__ = "keys"
 
-    id = Column(Integer, primary_key=True)
-    room_id = Column(Integer, ForeignKey('rooms.id'), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    number = Column(String, unique=True, index=True)  # K-101
+    room = Column(String, index=True)  # 101, LIB, DIR
+    status = Column(String, default="available")  # available, issued
+    description = Column(String)
 
-    # Связи
-    room = relationship("Room", back_populates="keys")
-    key_logs = relationship("KeyLog", back_populates="key")
-    allowed_roles = relationship("KeyAllowedRole", back_populates="key")
+    #Связь с историей
+    history = relationship("KeyIssue", back_populates="key")
 
+class KeyIssue(Base):
+    __tablename__ = "key_issues"
 
-class KeyAllowedRole(Base):
-    """Связующая таблица ключей и разрешенных ролей"""
-    __tablename__ = 'key_allowed_roles'
+    id = Column(Integer, primary_key=True, index=True)
+    key_id = Column(Integer, ForeignKey("keys.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    issue_time = Column(DateTime, default=datetime.now)
+    return_time = Column(DateTime, nullable=True)
 
-    role_id = Column(Integer, ForeignKey('roles.id'), primary_key=True)
-    key_id = Column(Integer, ForeignKey('keys.id'), primary_key=True)
-
-    # Связи
-    role = relationship("Role", back_populates="key_allowed_roles")
-    key = relationship("Key", back_populates="allowed_roles")
-
-
-class KeyLog(Base):
-    """Таблица журнала выдачи ключей"""
-    __tablename__ = 'key_logs'
-
-    id = Column(Integer, primary_key=True)
-    key_id = Column(Integer, ForeignKey('keys.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    issued_at = Column(DateTime, default=datetime.now)
-    returned_at = Column(DateTime)
-
-    # Связи
-    key = relationship("Key", back_populates="key_logs")
-    user = relationship("User", back_populates="key_logs")
+    #Связи
+    key = relationship("Key", back_populates="history")
+    user = relationship("User")

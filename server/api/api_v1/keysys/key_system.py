@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
+from core.database import get_db
 from crud import key_system as crud_keys
-from api.deps import get_current_user_with_permission, can_access_key_room
-from models.user import User
+from .dependencies import can_access_key_room
+from models import User, KeyIssue
 from datetime import datetime
+from api.api_v1.auth.dependencies import require_roles
 
 router = APIRouter(prefix="/keys", tags=["key_system"])
 
@@ -23,7 +24,7 @@ def get_available_keys(db: Session = Depends(get_db)):
 def issue_key(
         key_id: int,
         db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user_with_permission)
+        current_user = Depends(require_roles(["admin", "staff"])),
 ):
     # 1. Получаем ключ из БД
     key = crud_keys.get_key(db, key_id)
@@ -56,7 +57,7 @@ def issue_key(
 def return_key(
         key_id: int,
         db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user_with_permission)
+        current_user = Depends(require_roles(["admin", "staff"])),
 ):
     key = crud_keys.get_key(db, key_id)
     if not key:

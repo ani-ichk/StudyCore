@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.key_system import Key, KeyIssue
+from models.key import Key, KeyIssue
 from schemas.key_system import KeyCreate
 
 

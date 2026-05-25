@@ -1,6 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from models.user import User  # предполагаемая модель
+from models import User  # предполагаемая модель
+from core.database import get_db
+from api.api_v1.auth.dependencies import get_current_user, require_roles
 
 # Маппинг ролей на допустимые комнаты (можно вынести в БД или конфиг)
 ROOM_PERMISSIONS = {
@@ -16,10 +18,3 @@ def can_access_key_room(user: User, room: str) -> bool:
     user_role = user.role  # предполагается, что у User есть поле role
     allowed_rooms = ROOM_PERMISSIONS.get(user_role, [])
     return room in allowed_rooms
-
-def get_current_user_with_permission(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    """Функция, объединяющая получение пользователя и его прав"""
-    user = get_current_user(db, token)  # существующая функция из auth
-    if not user:
-        raise HTTPException(status_code=401, detail="Не авторизован")
-    return user
