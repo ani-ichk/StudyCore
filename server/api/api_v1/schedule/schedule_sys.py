@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from core.database import get_db
-from schemas.schedule import ScheduleCreate, ScheduleUpdate, ScheduleResponse
-from crud.schedule import (
+
+from core import get_db
+from schemas import ScheduleCreate, ScheduleUpdate, ScheduleResponse
+from crud import (
     create_schedule, get_schedule, update_schedule, delete_schedule,
     get_schedules_by_class, get_schedules_by_teacher, get_schedules_by_room,
     check_schedule_conflicts

@@ -7,10 +7,10 @@ from jose.exceptions import JWTError, ExpiredSignatureError
 from datetime import datetime, timedelta
 from functools import wraps
 
-from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from core.database import get_db
+from core import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from core import get_db
 from models import User
-from crud.read_methods import get_user_by_login
+from crud import get_user_by_login
 
 security = HTTPBearer()
 

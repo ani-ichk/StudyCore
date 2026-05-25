@@ -2,11 +2,8 @@ from datetime import datetime
 from typing import Optional, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 
-from models import AttendanceLog, User
-from models.enums import EventType
+from models import AttendanceLog, User, EventType
 from schemas import EventType as EventTypeSchema
-from crud.add_methods import add_attendance_log
-
 
 class AttendanceService:
     """Сервис для логики посещаемости."""

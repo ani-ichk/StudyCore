@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 
 from models import QRCode, User
-from scripts.qrcode import QRCodeService
+from scripts import QRCodeService
 
 
 class QRGeneratorService:

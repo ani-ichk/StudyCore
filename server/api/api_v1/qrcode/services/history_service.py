@@ -1,10 +1,9 @@
 from datetime import datetime, date, timedelta
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from sqlalchemy import and_
 
-from models import AttendanceLog, User
-from models.enums import EventType
+from models import AttendanceLog, User, EventType
 from schemas import AttendanceHistoryItem
 
 

@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from core.database import get_db
+from core import get_db
 from api.api_v1.qrcode.services import (
     QRGeneratorService,
     QRScannerService,

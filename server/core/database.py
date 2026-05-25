@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from .config import DB_URL, DB_DIR
-from models.base import Base
+from models import Base
 from .seed import seed_database
 
 DB_DIR.mkdir(parents=True, exist_ok=True)
@@ -51,6 +51,7 @@ def init_db() -> None:
         models.Key.__table__,
         models.KeyAllowedRole.__table__,
         models.KeyLog.__table__,
+        models.KeyAction.__table__,
         models.Schedule.__table__,
         models.QRCode.__table__
     ]

@@ -3,7 +3,7 @@ from io import BytesIO
 import base64
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 from sqlalchemy.orm import Session
 
 try:
@@ -13,8 +13,7 @@ try:
 except ImportError:
     OPENCV_AVAILABLE = False
 
-from models import QRCode, User, AttendanceLog
-from models.enums import EventType
+from models import QRCode, User, AttendanceLog, EventType
 
 
 class QRCodeService:

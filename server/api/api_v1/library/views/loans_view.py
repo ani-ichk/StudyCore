@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, timedelta
 
-from core.database import get_db
+from core import get_db
 from models import Book, LibraryLoan, User
-from schemas.library import LoanCreate, LoanOut, ReturnBook
+from schemas import LoanCreate, LoanOut, ReturnBook
 from api.api_v1.auth.dependencies import require_roles, get_current_user, get_permission_checker
 
 router = APIRouter(prefix="/loans", tags=["library-loans"])

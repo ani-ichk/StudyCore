@@ -23,6 +23,7 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user")
     library_loans = relationship("LibraryLoan", back_populates="user")
     key_logs = relationship("KeyLog", back_populates="user")
+    key_actions = relationship("KeyAction", back_populates="user")
     teacher_subjects = relationship("TeacherSubject", back_populates="teacher")
     grades_given = relationship("Grade", foreign_keys="[Grade.teacher_id]", back_populates="teacher")
     homeworks = relationship("Homework", foreign_keys="[Homework.teacher_id]", back_populates="teacher")

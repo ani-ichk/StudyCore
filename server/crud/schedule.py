@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from schemas.schedule import ScheduleCreate, ScheduleUpdate
-from models.schedule import Schedule
+from schemas import ScheduleCreate
+from models import Schedule
 
 
 def get_schedule(db: Session, schedule_id: int):

@@ -3,7 +3,7 @@ from models import (
     AttendanceLog, Notification, Schedule, NotificationType, Role, MealAccount, Class, Subject
 )
 from .read_methods import check_schedule_conflicts_simple
-from scripts.security import PasswordHasher
+from scripts import PasswordHasher
 
 
 def add_user(session, login, password, surname, name, patronymic=None,
