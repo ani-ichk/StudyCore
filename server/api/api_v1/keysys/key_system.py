@@ -1,95 +1,86 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List, Dict, Optional
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from database import get_db
+from crud import key_system as crud_keys
+from api.deps import get_current_user_with_permission, can_access_key_room
+from models.user import User
 from datetime import datetime
 
-router = APIRouter(prefix="/key_system", tags=["Ключница"])
+router = APIRouter(prefix="/keys", tags=["key_system"])
 
 
-keys_db: Dict[str, dict] = {
-    "key_101": {"id": "key_101", "room": "Кабинет 101", "available": True},
-    "key_102": {"id": "key_102", "room": "Кабинет 102", "available": True},
-    "key_gym": {"id": "key_gym", "room": "Спортзал", "available": True},
-    "key_lib": {"id": "key_lib", "room": "Библиотека", "available": False},
-}
+@router.get("/")
+def get_all_keys(db: Session = Depends(get_db)):
+    return crud_keys.get_keys(db)
 
-active_issuances: Dict[str, dict] = {}
-issuance_history: List[dict] = []
-allowed_roles = ["администратор", "завуч", "охранник", "учитель"]
 
-class KeyInfo(BaseModel):
-    id: str
-    room: str
-    available: bool
+@router.get("/available")
+def get_available_keys(db: Session = Depends(get_db)):
+    return crud_keys.get_available_keys(db)
 
-class KeyIssueRequest(BaseModel):
-    user_id: str
-    user_role: str
-    key_id: str
 
-class KeyReturnRequest(BaseModel):
-    user_id: str
-    key_id: str
-
-@router.get("/keys", response_model=List[KeyInfo])
-def list_keys():
-    return [KeyInfo(**key) for key in keys_db.values()]
-
-@router.get("/keys/available", response_model=List[KeyInfo])
-def list_available_keys():
-    return [KeyInfo(**key) for key in keys_db.values() if key["available"]]
-
-@router.post("/issue")
-def issue_key(request: KeyIssueRequest):
-    if request.user_role not in allowed_roles:
-        raise HTTPException(status_code=403, detail="У вас нет прав брать ключи")
-    
-    key = keys_db.get(request.key_id)
+@router.post("/{key_id}/issue")
+def issue_key(
+        key_id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user_with_permission)
+):
+    # 1. Получаем ключ из БД
+    key = crud_keys.get_key(db, key_id)
     if not key:
         raise HTTPException(status_code=404, detail="Ключ не найден")
-    if not key["available"]:
-        raise HTTPException(status_code=400, detail="Ключ уже выдан")
-    
-    key["available"] = False
-    now = datetime.now()
-    
-    record = {
-        "key_id": request.key_id,
-        "room": key["room"],
-        "taken_by": request.user_id,
-        "taken_at": now,
-        "returned_at": None,
-    }
-    active_issuances[request.key_id] = record
-    issuance_history.append(record)
-    
-    return {"status": "success", "message": f"Ключ от {key['room']} выдан", "issued_at": now}
 
-@router.post("/return")
-def return_key(request: KeyReturnRequest):
-    key = keys_db.get(request.key_id)
+    if key.status != "available":
+        raise HTTPException(status_code=400, detail=f"Ключ {key.number} недоступен")
+
+    # 2. Проверяем права через auth-модуль
+    if not can_access_key_room(current_user, key.room):
+        raise HTTPException(status_code=403, detail=f"Нет прав на ключ от кабинета {key.room}")
+
+    # 3. Выдаем ключ
+    crud_keys.update_key_status(db, key_id, "issued")
+
+    # 4. Записываем в историю (используя модель KeyIssue)
+    new_issue = KeyIssue(
+        key_id=key_id,
+        user_id=current_user.id,
+        issue_time=datetime.now()
+    )
+    db.add(new_issue)
+    db.commit()
+
+    return {"message": f"Ключ {key.number} выдан {current_user.name}", "success": True}
+
+
+@router.post("/{key_id}/return")
+def return_key(
+        key_id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user_with_permission)
+):
+    key = crud_keys.get_key(db, key_id)
     if not key:
         raise HTTPException(status_code=404, detail="Ключ не найден")
-    if key["available"]:
+
+    if key.status != "issued":
         raise HTTPException(status_code=400, detail="Ключ не был выдан")
-    
-    key["available"] = True
-    
-    if request.key_id in active_issuances:
-        active_issuances[request.key_id]["returned_at"] = datetime.now()
-        del active_issuances[request.key_id]
-    
-    for record in issuance_history:
-        if record["key_id"] == request.key_id and record["returned_at"] is None:
-            record["returned_at"] = datetime.now()
-            break
-    
-    return {"status": "success", "message": f"Ключ от {key['room']} возвращён"}
 
-@router.get("/history")
-def get_history():
-    return issuance_history
+    # Находим активную выдачу
+    active_issue = db.query(KeyIssue).filter(
+        KeyIssue.key_id == key_id,
+        KeyIssue.return_time.is_(None)
+    ).first()
 
-@router.get("/active")
-def get_active_issuances():
-    return list(active_issuances.values())
+    if not active_issue:
+        raise HTTPException(status_code=404, detail="Активная выдача не найдена")
+
+    # Проверка, что возвращает тот, кто брал (опционально)
+    if active_issue.user_id != current_user.id and current_user.role not in ["admin", "security"]:
+        raise HTTPException(status_code=403, detail="Вернуть ключ может только тот, кто брал, или администратор")
+
+    # Возвращаем ключ
+    crud_keys.update_key_status(db, key_id, "available")
+    active_issue.return_time = datetime.now()
+    db.commit()
+
+    return {"message": f"Ключ {key.number} возвращен", "success": True}
