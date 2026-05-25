@@ -1,1 +1,104 @@
 """CRUD инструменты для StudyCore."""
+from .add_methods import (
+    add_schedule,
+    add_notification,
+    add_attendance_log,
+    add_homework,
+    add_grade,
+    add_parent,
+    add_student,
+    add_role_to_user,
+    add_student_with_account,
+    add_user_with_roles,
+    add_user
+)
+from .key_system import (
+    get_key,
+    get_keys,
+    get_available_keys,
+    create_key,
+    update_key_status
+)
+from .delete_methods import (
+    delete_user,
+    delete_grade,
+    delete_homework,
+    delete_notification,
+)
+from .update_methods import (
+    update_user,
+    update_grade,
+    mark_notification_as_read,
+    update_meal_balance,
+)
+from .read_methods import (
+    get_user_by_login,
+    get_user_roles,
+    get_student_by_user_id,
+    get_parent_by_user_id,
+    get_student_grades,
+    get_class_homeworks,
+    get_user_attendance,
+    get_user_notifications,
+    get_students_by_parent,
+    get_overdue_books,
+    get_meal_transactions,
+    check_schedule_conflicts_simple
+)
+from .schedule import (
+    get_schedule,
+    get_schedules_by_class,
+    get_schedules_by_teacher,
+    get_schedules_by_room,
+    check_schedule_conflicts,
+    create_schedule,
+    update_schedule,
+    delete_schedule
+)
+
+__all__ = [
+    "add_schedule",
+    "add_notification",
+    "add_attendance_log",
+    "add_homework",
+    "add_grade",
+    "add_parent",
+    "add_student",
+    "add_role_to_user",
+    "add_student_with_account",
+    "add_user_with_roles",
+    "add_user",
+    "get_key",
+    "get_keys",
+    "get_available_keys",
+    "create_key",
+    "update_key_status",
+    "delete_user",
+    "delete_grade",
+    "delete_homework",
+    "delete_notification",
+    "update_user",
+    "update_grade",
+    "mark_notification_as_read",
+    "update_meal_balance",
+    "get_user_by_login",
+    "get_user_roles",
+    "get_student_by_user_id",
+    "get_parent_by_user_id",
+    "get_student_grades",
+    "get_class_homeworks",
+    "get_user_attendance",
+    "get_user_notifications",
+    "get_students_by_parent",
+    "get_overdue_books",
+    "get_meal_transactions",
+    "check_schedule_conflicts_simple",
+    "get_schedule",
+    "get_schedules_by_class",
+    "get_schedules_by_teacher",
+    "get_schedules_by_room",
+    "check_schedule_conflicts",
+    "create_schedule",
+    "update_schedule",
+    "delete_schedule"
+]

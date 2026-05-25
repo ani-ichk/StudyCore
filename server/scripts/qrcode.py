@@ -13,8 +13,7 @@ try:
 except ImportError:
     OPENCV_AVAILABLE = False
 
-from models import QRCode, User, AttendanceLog
-from models.enums import EventType
+from models import QRCode, User, AttendanceLog, EventType
 
 
 class QRCodeService:

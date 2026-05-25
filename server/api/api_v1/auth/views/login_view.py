@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
-from core.database import get_db
+from core import get_db
 from schemas import UserLogin, TokenResponse
 from api.api_v1.auth.services.auth_service import AuthService
 from api.api_v1.auth.services.token_service import TokenService

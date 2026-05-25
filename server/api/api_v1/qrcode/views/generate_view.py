@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from core.database import get_db
+from core import get_db
 from schemas import QRCodeGenerateRequest, QRCodeResponse
 from api.api_v1.qrcode.services.qr_generator_service import QRGeneratorService
 from api.api_v1.auth.dependencies import get_current_user, require_roles

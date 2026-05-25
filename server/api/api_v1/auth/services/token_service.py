@@ -4,7 +4,7 @@ from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 from fastapi import HTTPException, status, Response
 
-from core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from core import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from models import User
 
 

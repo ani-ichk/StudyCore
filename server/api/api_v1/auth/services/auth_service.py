@@ -3,9 +3,8 @@ from typing import Optional, Tuple
 from datetime import datetime
 
 from models import User
-from scripts.auth_methods import authenticate_user
-from crud.add_methods import add_attendance_log
-from crud.update_methods import update_user
+from scripts import authenticate_user
+from crud import add_attendance_log, update_user
 from schemas import UserResponse
 
 

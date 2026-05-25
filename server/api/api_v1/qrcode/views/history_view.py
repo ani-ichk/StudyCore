@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from datetime import date
 
-from core.database import get_db
+from core import get_db
 from schemas import AttendanceHistoryItem
 from api.api_v1.qrcode.services.history_service import HistoryService
 from api.api_v1.auth.dependencies import (

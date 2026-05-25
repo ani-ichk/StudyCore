@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from core.database import get_db
+from core import get_db
 from schemas import (
     QRCodeScanRequest, AttendanceEventResponse, 
     EventType, QRCodePurpose

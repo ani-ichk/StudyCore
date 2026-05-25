@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from core.database import get_db
+from core import get_db
 from models import Book
-from schemas.library import BookCreate, BookOut
+from schemas import BookCreate, BookOut
 from api.api_v1.auth.dependencies import require_roles
 
 router = APIRouter(prefix="/books", tags=["library-books"])

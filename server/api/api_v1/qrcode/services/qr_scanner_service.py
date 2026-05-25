@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 import base64
 
 from models import User
-from scripts.qrcode import QRCodeService
+from scripts import QRCodeService
 
 
 class QRScannerService:

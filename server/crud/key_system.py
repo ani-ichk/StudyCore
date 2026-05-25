@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
-from models.key import Key, KeyIssue
-from schemas.key_system import KeyCreate
+from models import Key
+from schemas import KeyCreate
 
+# Возможны фулл изменения
 
 def get_key(db: Session, key_id: int):
     return db.query(Key).filter(Key.id == key_id).first()

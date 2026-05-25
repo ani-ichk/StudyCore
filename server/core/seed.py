@@ -1,7 +1,7 @@
 """Логика заполнения базы данных (роли, пользователь-администратор и т.д.)."""
 
 from sqlalchemy.orm import Session
-from core.config import (
+from .config import (
     DEFAULT_ROLES,
     DEFAULT_ADMIN_LOGIN,
     DEFAULT_ADMIN_PASSWORD,
@@ -10,7 +10,7 @@ from core.config import (
     DEFAULT_ADMIN_EMAIL,
 )
 from models import Role, User, UserRole
-from scripts.security import PasswordHasher
+from scripts import PasswordHasher
 
 
 def seed_database(session: Session) -> None:

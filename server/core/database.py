@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from .config import DB_URL, DB_DIR
-from models.base import Base
+from models import Base
 from .seed import seed_database
 
 DB_DIR.mkdir(parents=True, exist_ok=True)

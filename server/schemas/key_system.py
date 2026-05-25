@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
+# Возможно фулл изменения
 
 class KeyBase(BaseModel):
     number: str

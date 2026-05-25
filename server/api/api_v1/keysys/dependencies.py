@@ -1,8 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from models import User  # предполагаемая модель
-from core.database import get_db
+from core import get_db
 from api.api_v1.auth.dependencies import get_current_user, require_roles
+
+# Возможна полная переделка кода
 
 # Маппинг ролей на допустимые комнаты (можно вынести в БД или конфиг)
 ROOM_PERMISSIONS = {

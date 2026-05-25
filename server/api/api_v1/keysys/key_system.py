@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from core.database import get_db
+from core import get_db
 from crud import key_system as crud_keys
 from .dependencies import can_access_key_room
-from models import User, KeyIssue
+from models import User
 from datetime import datetime
 from api.api_v1.auth.dependencies import require_roles
+
+# Возможно полная переделка кода
 
 router = APIRouter(prefix="/keys", tags=["key_system"])
 

@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from core.database import get_db
+from core import get_db
 from schemas import UserCreate, UserResponse, UserRole
-from crud.add_methods import (
+from crud import (
     add_user_with_roles, add_student_with_account, 
-    add_parent, add_role_to_user
+    add_parent, add_role_to_user,
+    get_user_by_login, get_user_roles
 )
-from crud.read_methods import get_user_by_login, get_user_roles
 from models import Role, User, Student, Parent
-from scripts.security import PasswordHasher
+from scripts import PasswordHasher
 
 router = APIRouter(prefix="/register", tags=["registration"])
 
