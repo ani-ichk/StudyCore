@@ -1,7 +1,6 @@
 from typing import Optional, Tuple, Dict, Any
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-import base64
 
 from models import User
 from scripts import QRCodeService

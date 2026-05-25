@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 from fastapi import HTTPException, status, Response

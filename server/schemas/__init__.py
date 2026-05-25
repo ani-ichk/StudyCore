@@ -16,7 +16,7 @@ from .library import (
     BookCreate, BookOut, LoanCreate, LoanOut, ReturnBook,
     )
 from .key_system import (
-    KeyCreate, KeyOut, KeyBase, KeyIssueOut,
+    KeyCreate, KeyOut, KeyBase, KeyListOut, KeyActionCreate, KeyActionOut, KeyHistoryOut,
 )
 from .schedule import (
     ScheduleCreate, ScheduleUpdate, ScheduleBase, ScheduleResponse,
@@ -46,7 +46,10 @@ __all__ = [
     'KeyCreate', 
     'KeyOut', 
     'KeyBase', 
-    'KeyIssueOut',
+    'KeyListOut',
+    'KeyActionCreate',
+    'KeyActionOut',
+    'KeyHistoryOut',
     'ScheduleCreate', 
     'ScheduleUpdate', 
     'ScheduleBase', 

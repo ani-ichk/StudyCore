@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import Optional, Tuple
-from datetime import datetime
 
 from models import User
 from scripts import authenticate_user
-from crud import add_attendance_log, update_user
+from crud import add_attendance_log
 from schemas import UserResponse
 
 

@@ -15,6 +15,7 @@ class RoomType(enum.Enum):
     CLASSROOM = "classroom"
     LIBRARY = "library"
     STORAGE = "storage_room"
+    OFFICE = "office"
     OTHER = "other"
 
 

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 from core.database import init_db
 from api import router as api_router
-from core.config import HOST_FAST_API, PORT_FAST_API
+from core import HOST_FAST_API, PORT_FAST_API
 
 
 app = FastAPI(title="StudyCore Campus API")

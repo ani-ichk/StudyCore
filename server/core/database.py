@@ -51,6 +51,7 @@ def init_db() -> None:
         models.Key.__table__,
         models.KeyAllowedRole.__table__,
         models.KeyLog.__table__,
+        models.KeyAction.__table__,
         models.Schedule.__table__,
         models.QRCode.__table__
     ]

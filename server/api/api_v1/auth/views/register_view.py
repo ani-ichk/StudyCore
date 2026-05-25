@@ -3,11 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from core import get_db
-from schemas import UserCreate, UserResponse, UserRole
+from schemas import UserCreate, UserResponse
 from crud import (
-    add_user_with_roles, add_student_with_account, 
-    add_parent, add_role_to_user,
-    get_user_by_login, get_user_roles
+    add_user_with_roles, add_parent, add_role_to_user, get_user_by_login,
 )
 from models import Role, User, Student, Parent
 from scripts import PasswordHasher

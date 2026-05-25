@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from core import get_db
 from schemas import UserResponse
 from api.api_v1.auth.services.auth_service import AuthService
-from api.api_v1.auth.services.token_service import TokenService
 from api.api_v1.auth.dependencies import get_current_user
 from models import User
 
