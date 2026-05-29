@@ -87,6 +87,160 @@ def create_key(
     return db_key
 
 
+@router.post("/{key_id}/role/{role_name}")
+def allow_role_for_key(
+    key_id: int,
+    role_name: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["admin"])),
+):
+    """Разрешить роль для ключа (только админ)"""
+    # Проверяем, существует ли ключ
+    key = crud_keys.get_key(db, key_id)
+    if not key:
+        raise HTTPException(status_code=404, detail=f"Ключ с ID {key_id} не найден")
+    
+    # Проверяем существует ли привязка пользователя к этому ключу
+    existing = crud_keys.get_key_allowed_role(db, key_id, role_name)
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Роль уже разрешена для этого ключа")
+    
+    # Логируем действие
+    crud_keys.create_key_action(
+        db,
+        key_id=key_id,
+        user_id=current_user.id,
+        action_type="allow_role",
+        description=f"Роль {role_name} разрешена для ключа {key.number} пользователем {current_user.name}"
+    )
+
+    # Создаем разрешение
+    crud_keys.create_key_allowed_role(db, key_id, role_name)
+
+    return {
+        "message": f"Роль {role_name} разрешена для ключа {key.number}",
+        "success": True
+    }
+
+
+@router.delete("/{key_id}/role/{role_name}")
+def disallow_role_for_key(
+    key_id: int,
+    role_name: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["admin"])),
+):
+    """Запретить роль для ключа (только админ)"""
+    # Проверяем, существует ли ключ
+    key = crud_keys.get_key(db, key_id)
+    if not key:
+        raise HTTPException(status_code=404, detail=f"Ключ с ID {key_id} не найден")
+    
+    # Проверяем существует ли привязка пользователя к этому ключу
+    existing = crud_keys.get_key_allowed_role(db, key_id, role_name)
+    if not existing:
+        raise HTTPException(status_code=400, detail=f"Роль не разрешена для этого ключа")
+    
+    # Логируем действие
+    crud_keys.create_key_action(
+        db,
+        key_id=key_id,
+        user_id=current_user.id,
+        action_type="disallow_role",
+        description=f"Роль {role_name} запрещена для ключа {key.number} пользователем {current_user.name}"
+    )
+
+    # Удаляем разрешение
+    crud_keys.delete_key_allowed_role(db, key_id, role_name)
+
+    return {
+        "message": f"Роль {role_name} запрещена для ключа {key.number}",
+        "success": True
+    }
+
+
+@router.delete("/{key_id}")
+def delete_key(
+    key_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["admin"])),
+):
+    """Удалить ключ (только админ)"""
+    # Проверяем, существует ли ключ
+    key = crud_keys.get_key(db, key_id)
+    if not key:
+        raise HTTPException(status_code=404, detail=f"Ключ с ID {key_id} не найден")
+    
+    # Проверяем, что ключ доступен (не выдан и не на обслуживании)
+    if key.status not in ["available", "lost"]:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Невозможно удалить ключ со статусом '{key.status}'. Ключ должен быть доступен или потерян"
+        )
+    
+    # Логируем удаление
+    crud_keys.create_key_action(
+        db,
+        key_id=key_id,
+        user_id=current_user.id,
+        action_type="deleted",
+        description=f"Ключ удален пользователем {current_user.name}"
+    )
+    
+    # Логируем удаление привязанных ролей к ключу
+    for allowed_role in key.allowed_roles:
+        crud_keys.create_key_action(
+            db,
+            key_id=key_id,
+            user_id=current_user.id,
+            action_type="deleted_allowed_role",
+            description=f"Разрешение роли {allowed_role.role_name} удалено вместе с ключом {key.number} пользователем {current_user.name}"
+        )
+    
+    # Удаляем все привязанные роли к ключу
+    for allowed_role in key.allowed_roles:
+        crud_keys.delete_key_allowed_role(db, key_id, allowed_role.role_name)
+
+    # Удаляем ключ
+    crud_keys.delete_key(db, key_id)
+
+    return {
+        "message": f"Ключ {key.number} успешно удален",
+        "success": True
+    }
+
+
+@router.put("/{key_id}/update")
+def update_key(
+    key_id: int,
+    key_data: KeyCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["admin"])),
+):
+    """Обновить информацию о ключе (только админ)"""
+    # Проверяем, существует ли ключ
+    key = crud_keys.get_key(db, key_id)
+    if not key:
+        raise HTTPException(status_code=404, detail=f"Ключ с ID {key_id} не найден")
+    
+    # Логируем обновление
+    crud_keys.create_key_action(
+        db,
+        key_id=key_id,
+        user_id=current_user.id,
+        action_type="updated",
+        description=f"Ключ обновлен пользователем {current_user.name}"
+    )
+    
+    # Обновляем ключ
+    crud_keys.update_key(db, key_id, **key_data.model_dump())
+
+    return {
+        "message": f"Ключ {key.number} успешно обновлен",
+        "success": True
+    }
+
+
 @router.post("/{key_id}/issue")
 def issue_key(
     key_id: int,
@@ -104,7 +258,7 @@ def issue_key(
 
     # Проверяем права доступа
     if not can_access_key_room(db, current_user.id, key.room_id):
-        raise HTTPException(status_code=403, detail=f"Нет прав на ключ от кабинета {key.room.number if key.room else 'unknown'}")
+        raise HTTPException(status_code=403, detail=f"Нет прав на ключ от кабинета {key.number}")
 
     # Создаем запись в журнале
     log = crud_keys.create_key_log(db, key_id=key_id, user_id=current_user.id)

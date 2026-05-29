@@ -16,3 +16,11 @@ from main import app
 def client() -> Generator[TestClient]:
     with TestClient(app=app) as client:
         yield client
+
+@pytest.fixture()
+def auth_client(client: TestClient) -> TestClient:
+    resp = client.post("/api/v1/login", json={"login": "admin", "password": "admin123"})
+    assert resp.status_code == 200, f"Login failed: {resp.status_code} {resp.text}"
+    token = resp.json()["access_token"]
+    client.headers.update({"Authorization": f"Bearer {token}"})
+    return client

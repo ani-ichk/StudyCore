@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional, List
 from .enums import UserRole
 
@@ -26,5 +26,5 @@ class UserResponse(UserBase):
 
 
 class UserLogin(BaseModel):
-    login: str
-    password: str
+    login: str = Field(..., json_schema_extra={"example": "admin"})
+    password: str = Field(..., json_schema_extra={"example": "admin123"})

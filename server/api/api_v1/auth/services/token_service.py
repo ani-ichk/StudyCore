@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 from typing import Dict, Any
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
@@ -23,11 +23,11 @@ class TokenService:
             JWT токен в виде строки
         """
         to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         
         to_encode.update({
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.datetime.now(datetime.UTC),
             "token_type": "access"
         })
         
@@ -52,13 +52,13 @@ class TokenService:
         Returns:
             Refresh токен
         """
-        expire = datetime.utcnow() + timedelta(days=30)  # Refresh токен живет 30 дней
+        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=30)  # Refresh токен живет 30 дней
         
         payload = {
             "sub": str(user_id),
             "token_version": 1,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.datetime.now(datetime.UTC),
             "token_type": "refresh"
         }
         
