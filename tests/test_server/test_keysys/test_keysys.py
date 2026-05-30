@@ -1,7 +1,6 @@
 """Тест системы ключей"""
 
 from starlette.testclient import TestClient
-from tests.test_server.conftest import auth_client
 
 
 def test_get_all_keys(auth_client: TestClient):
@@ -10,7 +9,7 @@ def test_get_all_keys(auth_client: TestClient):
     data = resp.json()
     assert isinstance(data, list)
 
-def test_create_key(auth_client: TestClient):
+def test_create_and_delete_key(auth_client: TestClient):
     resp = auth_client.post(
         "/api/v1/keys/",
         json={
@@ -28,24 +27,6 @@ def test_create_key(auth_client: TestClient):
     keys_id = data["id"]
 
     resp = auth_client.delete(f"/api/v1/keys/{keys_id}")
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data.get("success") is True
-
-def test_delete_key(auth_client: TestClient):
-    resp = auth_client.post(
-        "/api/v1/keys/",
-        json={
-            "number": "string1",
-            "room_id": 100,
-            "description": "string",
-        },
-    )
-    assert resp.status_code == 200
-    data = resp.json()
-    key_id = data["id"]
-
-    resp = auth_client.delete(f"/api/v1/keys/{key_id}")
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("success") is True
