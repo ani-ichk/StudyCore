@@ -59,7 +59,7 @@ def create_schedule(db: Session, schedule: ScheduleCreate) -> Schedule:
     if conflicts:
         raise ValueError(f"Конфликты: {conflicts}")
 
-    db_schedule = Schedule(**schedule.dict())
+    db_schedule = Schedule(**schedule.model_dump())
     db.add(db_schedule)
     db.commit()
     db.refresh(db_schedule)
@@ -71,7 +71,7 @@ def update_schedule(db: Session, schedule_id: int, schedule_update) -> Optional[
     if not db_schedule:
         return None
 
-    for key, value in schedule_update.dict(exclude_unset=True).items():
+    for key, value in schedule_update.model_dump(exclude_unset=True).items():
         setattr(db_schedule, key, value)
 
     db.commit()

@@ -18,10 +18,13 @@ class ScheduleCreate(ScheduleBase):
     pass
 
 
-class ScheduleUpdate(BaseModel):
+class ScheduleUpdate(ScheduleBase):
+    class_id: Optional[int] = None
     subject_id: Optional[int] = None
     teacher_id: Optional[int] = None
     classroom_id: Optional[int] = None
+    day_of_week: Optional[int] = Field(None, ge=1, le=7)
+    lesson_number: Optional[int] = Field(None, ge=1)
     start_time: Optional[time] = None
     end_time: Optional[time] = None
 
