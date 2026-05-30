@@ -1,3 +1,5 @@
+"Тесты для расписания"
+
 from starlette.testclient import TestClient
 import datetime
 

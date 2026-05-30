@@ -1,4 +1,4 @@
-"""Тесты для библиотеки."""
+"""Тесты для библиотеки"""
 
 import datetime
 from starlette.testclient import TestClient
