@@ -27,7 +27,7 @@ def update_grade(session, grade_id, **kwargs):
 
 def mark_notification_as_read(session, notification_id):
     """Пометить уведомление как прочитанное"""
-    notification = session.query(Notification).get(notification_id)
+    notification = session.get(Notification, notification_id)
     if notification:
         notification.is_read = True
         session.commit()

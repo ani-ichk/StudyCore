@@ -1,16 +1,7 @@
 "Тест модуля аутентификации"
 
 from starlette.testclient import TestClient
-
-def restore_admin(client: TestClient):
-    resp = client.post("/api/v1/login", json=
-                       {"login": "admin", 
-                        "password": "admin123"
-                        })
-    assert resp.status_code == 200
-    token = resp.json()["access_token"]
-    client.headers.update({"Authorization": f"Bearer {token}"})
-    return token
+from tests.test_server.conftest import restore_admin
 
 class TestAuth:
     def test_login(self, auth_client: TestClient):

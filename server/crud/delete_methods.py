@@ -92,7 +92,7 @@ def delete_homework(session, homework_id):
 
 def delete_notification(session, notification_id):
     """Удалить уведомление"""
-    notification = session.query(Notification).get(notification_id)
+    notification = session.get(Notification, notification_id)
     if notification:
         session.delete(notification)
         session.commit()

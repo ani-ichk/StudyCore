@@ -1,15 +1,7 @@
 "Тесты для расписания"
 
 from starlette.testclient import TestClient
-import datetime
-
-def parse_iso_z(s: str) -> datetime.datetime:
-    if s.endswith("Z"):
-        s = s[:-1]
-    try:
-        return datetime.time.fromisoformat(s)
-    except ValueError:
-        return datetime.datetime.strptime(s, "%H:%M:%S.%f").time()
+from tests.test_server.conftest import parse_iso_z
 
 def test_create_and_delete_schedule(auth_client: TestClient):
     resp = auth_client.post("/api/v1/schedule/", 

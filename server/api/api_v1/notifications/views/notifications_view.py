@@ -18,7 +18,7 @@ async def create_notification(
     current_user: User = Depends(require_roles(["admin", "staff", "teacher"]))
 ):
     """Отправить уведомление пользователю"""
-    user = db.query(User).get(data.user_id)
+    user = db.get(User, data.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     return add_notification(db, data.user_id, data.type, data.message)
@@ -55,7 +55,7 @@ async def mark_notification_as_read_endpoint(
     current_user: User = Depends(get_current_user)
 ):
     """Пометить уведомление как прочитанное"""
-    notification = db.query(Notification).get(notification_id)
+    notification = db.get(Notification, notification_id)
     if not notification:
         raise HTTPException(status_code=404, detail="Уведомление не найдено")
     
@@ -72,7 +72,7 @@ async def delete_notification_endpoint(
     current_user: User = Depends(require_roles(["admin", "staff"]))
 ):
     """Удалить уведомление (только админ/персонал)"""
-    notification = db.query(Notification).get(notification_id)
+    notification = db.get(Notification, notification_id)
     if not notification:
         raise HTTPException(status_code=404, detail="Уведомление не найдено")
     

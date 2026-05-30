@@ -1,6 +1,6 @@
 """Тесты для библиотеки"""
 
-import datetime
+from tests.test_server.conftest import parse_iso_z
 from starlette.testclient import TestClient
 
 class TestLibraryBooks:
@@ -106,15 +106,6 @@ class TestLibraryBooks:
         assert data.get("ok") is True
 
 class TestLibraryLoans:
-    @staticmethod
-    def parse_iso_z(s: str) -> datetime.datetime:
-        if s.endswith("Z"):
-            s = s[:-1] + "+00:00"
-        dt = datetime.datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=datetime.timezone.utc)
-        return dt
-
     def test_issue_and_return_book(self, auth_client: TestClient):
         resp = auth_client.post(
             "/api/v1/books/",
@@ -288,7 +279,7 @@ class TestLibraryLoans:
         assert data["book_id"] == book_id
         assert data["user_id"] == 1
         assert data["deadline"] == "2020-01-01T00:00:00"
-        assert self.parse_iso_z(data["deadline"]) <= self.parse_iso_z("2020-01-01T00:00:00")
+        assert parse_iso_z(data["deadline"]) <= parse_iso_z("2020-01-01T00:00:00")
         assert len(data) > 0
         
         resp = auth_client.delete(f"/api/v1/books/{book_id}")
