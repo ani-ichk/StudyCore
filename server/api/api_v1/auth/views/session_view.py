@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
 from core import get_db
 from schemas import UserResponse
 from api.api_v1.auth.services.auth_service import AuthService
+from api.api_v1.auth.services.token_service import TokenService
 from api.api_v1.auth.dependencies import get_current_user
 from models import User
+from crud import delete_user
 
 router = APIRouter(prefix="/session", tags=["session"])
 
@@ -88,4 +90,34 @@ async def get_user_permissions(
         "user_id": current_user.id,
         "roles": user_roles,
         "permissions": permissions
+    }
+
+
+@router.delete("/account")
+async def delete_account(
+    response: Response,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Удаление аккаунта пользователя со всеми связанными данными.
+    """
+    user_id = current_user.id
+    user_login = current_user.login
+    
+    # Удаляем пользователя и все его данные
+    success = delete_user(db, user_id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Не удалось удалить аккаунт. Попробуйте позже."
+        )
+    
+    # Очищаем cookie с токеном
+    TokenService.clear_token_cookie(response)
+    
+    return {
+        "message": f"Аккаунт пользователя '{user_login}' успешно удален",
+        "user_id": user_id
     }

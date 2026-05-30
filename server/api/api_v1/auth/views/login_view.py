@@ -82,7 +82,7 @@ async def refresh_token(
     Обновление access токена с помощью refresh токена.
     """
     try:
-        new_access_token = TokenService.refresh_access_token(refresh_token)
+        new_access_token = TokenService.refresh_access_token(refresh_token, db)
         
         return {
             "access_token": new_access_token,

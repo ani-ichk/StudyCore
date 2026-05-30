@@ -3,7 +3,7 @@ from models import User, Grade, Notification, Student, MealTransaction, Transact
 
 def update_user(session, user_id, **kwargs):
     """Обновить данные пользователя"""
-    user = session.query(User).get(user_id)
+    user = session.get(User, user_id)
     if user:
         for key, value in kwargs.items():
             if hasattr(user, key):

@@ -30,6 +30,10 @@ async def logout(
     # Удаляем cookie
     TokenService.clear_token_cookie(response)
     
+    # Инвалидируем все токены пользователя
+    current_user.token_version += 1
+    db.commit()
+    
     return {
         "message": "Успешный выход из системы",
         "user": f"{current_user.surname} {current_user.name}"

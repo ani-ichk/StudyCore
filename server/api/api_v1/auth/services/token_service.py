@@ -3,9 +3,11 @@ from typing import Dict, Any
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 from fastapi import HTTPException, status, Response
+from sqlalchemy.orm import Session
 
 from core import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from models import User
+from crud import update_user
 
 
 class TokenService:
@@ -96,12 +98,13 @@ class TokenService:
             )
     
     @staticmethod
-    def refresh_access_token(refresh_token: str) -> str:
+    def refresh_access_token(refresh_token: str, db: Session) -> str:
         """
         Обновление access токена с помощью refresh токена.
         
         Args:
             refresh_token: Refresh токен
+            db: Session БД
             
         Returns:
             Новый access токен
@@ -124,9 +127,23 @@ class TokenService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-        # Создаем новый access токен
+        # Получаем пользователя и увеличиваем версию токена
+        user = db.get(User, int(user_id))
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Пользователь не найден",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        # Увеличиваем версию токена для инвалидации старых токенов
+        new_token_version = user.token_version + 1
+        update_user(db, int(user_id), token_version=new_token_version)
+        
+        # Создаем новый access токен с новой версией
         new_access_token = TokenService.create_access_token(
-            data={"sub": user_id, "user_id": int(user_id)}
+            data={"sub": user.login, "user_id": int(user_id), "token_version": new_token_version}
         )
         
         return new_access_token
