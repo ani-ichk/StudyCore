@@ -1,6 +1,7 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from models import Key, KeyAction, KeyLog
+from models import Key, KeyAction, KeyLog, KeyAllowedRole
 from schemas import KeyCreate
 
 
@@ -18,10 +19,6 @@ def get_keys(db: Session, skip: int = 0, limit: int = 100):
 
 def get_available_keys(db: Session):
     return db.query(Key).filter(Key.status == "available").all()
-
-
-def get_keys_by_room(db: Session, room_id: int):
-    return db.query(Key).filter(Key.room_id == room_id).all()
 
 
 def create_key(db: Session, key: KeyCreate):
@@ -55,6 +52,13 @@ def update_key(db: Session, key_id: int, **kwargs):
 def delete_key(db: Session, key_id: int):
     key = get_key(db, key_id)
     if key:
+        active_logs = db.query(KeyLog).filter(
+            KeyLog.key_id == key_id,
+            KeyLog.returned_at == None
+        ).all()
+        
+        for log in active_logs:
+            log.returned_at = datetime.now()
         db.delete(key)
         db.commit()
         return True
@@ -80,17 +84,6 @@ def get_key_actions(db: Session, key_id: int, skip: int = 0, limit: int = 100):
     ).order_by(desc(KeyAction.created_at)).offset(skip).limit(limit).all()
 
 
-def get_user_key_actions(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return db.query(KeyAction).filter(
-        KeyAction.user_id == user_id
-    ).order_by(desc(KeyAction.created_at)).offset(skip).limit(limit).all()
-
-
-def get_key_action(db: Session, action_id: int):
-    return db.query(KeyAction).filter(KeyAction.id == action_id).first()
-
-
-# KeyLog CRUD operations
 def create_key_log(db: Session, key_id: int, user_id: int):
     log = KeyLog(key_id=key_id, user_id=user_id)
     db.add(log)
@@ -110,19 +103,39 @@ def get_active_key_log(db: Session, key_id: int):
         KeyLog.returned_at.is_(None)
     ).first()
 
-
-def get_key_logs(db: Session, key_id: int, skip: int = 0, limit: int = 100):
-    return db.query(KeyLog).filter(
-        KeyLog.key_id == key_id
-    ).order_by(desc(KeyLog.issued_at)).offset(skip).limit(limit).all()
-
-
 def update_key_log_return(db: Session, log_id: int):
     """Отметить возврат ключа"""
-    from datetime import datetime
     log = get_key_log(db, log_id)
     if log:
         log.returned_at = datetime.now()
         db.commit()
         db.refresh(log)
     return log
+
+def get_key_allowed_role(
+    db: Session, key_id: int, role_name: str
+):
+    
+    return db.query(KeyAllowedRole).filter(
+        KeyAllowedRole.key_id == key_id,
+        KeyAllowedRole.role_name == role_name
+    ).first()
+
+def create_key_allowed_role(
+    db: Session, key_id: int, role_name: str
+):
+    allowed_role = KeyAllowedRole(key_id=key_id, role_name=role_name)
+    db.add(allowed_role)
+    db.commit()
+    db.refresh(allowed_role)
+    return allowed_role
+
+def delete_key_allowed_role(
+    db: Session, key_id: int, role_name: str
+):
+    allowed_role = get_key_allowed_role(db, key_id, role_name)
+    if allowed_role:
+        db.delete(allowed_role)
+        db.commit()
+        return True
+    return False

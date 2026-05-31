@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
 
@@ -23,8 +23,7 @@ class KeyOut(KeyBase):
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KeyListOut(BaseModel):
@@ -35,8 +34,7 @@ class KeyListOut(BaseModel):
     description: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KeyActionBase(BaseModel):
@@ -55,8 +53,7 @@ class KeyActionOut(KeyActionBase):
     user_id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KeyLogBase(BaseModel):
@@ -73,8 +70,7 @@ class KeyLogOut(KeyLogBase):
     issued_at: datetime
     returned_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KeyHistoryOut(BaseModel):
@@ -87,5 +83,4 @@ class KeyHistoryOut(BaseModel):
     description: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

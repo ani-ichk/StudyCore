@@ -31,7 +31,7 @@ def authenticate_user_by_email(session, email, password):
 def change_password(session, user_id, old_password, new_password):
     """Смена пароля пользователя"""
     try:
-        user = session.query(User).get(user_id)
+        user = user = session.get(User, user_id)
         if not user:
             return False, "Пользователь не найден"
 

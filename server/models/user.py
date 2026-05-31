@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
-from .base import Base
+from models import Base
 
 class User(Base):
     """Основная таблица пользователей"""

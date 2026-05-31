@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from core import get_db
-from models import Book
+from models import Book, LibraryLoan
 from schemas import BookCreate, BookOut
 from api.api_v1.auth.dependencies import require_roles
 
@@ -37,7 +37,7 @@ async def get_books(
 
 @router.get("/{book_id}", response_model=BookOut)
 async def get_book(book_id: int, db: Session = Depends(get_db)):
-    book = db.query(Book).get(book_id)
+    book = db.get(Book, book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Книга не найдена")
     return book
@@ -49,7 +49,7 @@ async def update_book(
     db: Session = Depends(get_db),
     current_user = Depends(require_roles(["admin", "staff"]))
 ):
-    book = db.query(Book).get(book_id)
+    book = db.get(Book, book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Книга не найдена")
     book.title = book_data.title
@@ -67,9 +67,15 @@ async def delete_book(
     db: Session = Depends(get_db),
     current_user = Depends(require_roles(["admin", "staff"]))
 ):
-    book = db.query(Book).get(book_id)
+    book = db.get(Book, book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Книга не найдена")
+    
+    loands = db.query(LibraryLoan).filter(LibraryLoan.book_id == book_id).all()
+    if loands:
+        for loand in loands:
+            db.delete(loand)
+
     db.delete(book)
     db.commit()
     return {"ok": True}

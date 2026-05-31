@@ -3,7 +3,7 @@ from models import User, Grade, Notification, Student, MealTransaction, Transact
 
 def update_user(session, user_id, **kwargs):
     """Обновить данные пользователя"""
-    user = session.query(User).get(user_id)
+    user = session.get(User, user_id)
     if user:
         for key, value in kwargs.items():
             if hasattr(user, key):
@@ -27,7 +27,7 @@ def update_grade(session, grade_id, **kwargs):
 
 def mark_notification_as_read(session, notification_id):
     """Пометить уведомление как прочитанное"""
-    notification = session.query(Notification).get(notification_id)
+    notification = session.get(Notification, notification_id)
     if notification:
         notification.is_read = True
         session.commit()

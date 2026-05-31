@@ -88,7 +88,7 @@ class AttendanceService:
         Returns:
             Словарь со статусом
         """
-        user = self.db.query(User).get(user_id)
+        user = self.db.get(User, user_id)
         if not user:
             return {
                 'user_id': user_id,

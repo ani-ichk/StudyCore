@@ -16,12 +16,12 @@ async def issue_book(
     db: Session = Depends(get_db),
     current_user = Depends(require_roles(["admin", "staff", "teacher"]))
 ):
-    book = db.query(Book).get(loan_data.book_id)
+    book = db.get(Book, loan_data.book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Книга не найдена")
     if book.quantity_available < 1:
         raise HTTPException(status_code=400, detail="Книга недоступна")
-    user = db.query(User).get(loan_data.user_id)
+    user = db.get(User, loan_data.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     
@@ -53,7 +53,7 @@ async def return_book(
         raise HTTPException(status_code=404, detail="Активная выдача не найдена")
     
     loan.returned_at = datetime.now()
-    book = db.query(Book).get(return_data.book_id)
+    book = db.get(Book, return_data.book_id)
     if book:
         book.quantity_available += 1
     db.commit()

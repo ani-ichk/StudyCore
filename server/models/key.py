@@ -17,16 +17,16 @@ class Key(Base):
 
     # Связи
     room = relationship("Room", back_populates="keys")
-    key_logs = relationship("KeyLog", back_populates="key")
-    allowed_roles = relationship("KeyAllowedRole", back_populates="key")
-    actions = relationship("KeyAction", back_populates="key")
+    key_logs = relationship("KeyLog", back_populates="key", cascade="all, delete")
+    allowed_roles = relationship("KeyAllowedRole", back_populates="key", cascade="all, delete")
+    actions = relationship("KeyAction", back_populates="key", cascade="all, delete")
 
 
 class KeyAllowedRole(Base):
     """Связующая таблица ключей и разрешенных ролей"""
     __tablename__ = 'key_allowed_roles'
 
-    role_id = Column(Integer, ForeignKey('roles.id'), primary_key=True)
+    role_name = Column(String(50), ForeignKey('roles.name'), primary_key=True)
     key_id = Column(Integer, ForeignKey('keys.id'), primary_key=True)
 
     # Связи

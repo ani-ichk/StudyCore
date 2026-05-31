@@ -80,9 +80,12 @@ def add_student_with_account(session, user_id, class_id, initial_balance=0.0):
 
 def add_role_to_user(session, user_id, role_id):
     """Добавить роль пользователю"""
+    existing = session.query(UserRole).filter_by(user_id=user_id, role_id=role_id).first()
+    if existing:
+        return existing
     user_role = UserRole(user_id=user_id, role_id=role_id)
     session.add(user_role)
-    session.commit()
+    return user_role
 
 
 def add_student(session, user_id, class_id):

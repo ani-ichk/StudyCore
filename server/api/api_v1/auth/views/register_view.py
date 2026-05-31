@@ -51,6 +51,13 @@ async def register_user(
             )
         valid_roles.append(role)
     
+    # Проверяем существует ли такая почта у некого пользователя в системе
+    if user_data.email:
+        existing_email = db.query(User).filter_by(email=user_data.email).first()
+        if existing_email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="Пользователь с таким email уже существует")
+
     try:
         # Создаем пользователя с ролями
         user = add_user_with_roles(
@@ -68,7 +75,7 @@ async def register_user(
         db.commit()
         
         # Получаем обновленного пользователя со всеми связями
-        user = db.query(User).get(user.id)
+        user = db.get(User, user.id)
         
         # Формируем ответ
         response = UserResponse(
@@ -117,7 +124,7 @@ async def register_parent_with_children(
     # Привязываем детей
     if parent:
         for child_id in children_ids:
-            student = db.query(Student).get(child_id)
+            student = db.get(Student, child_id)
             if student and student not in parent.students:
                 parent.students.append(student)
         

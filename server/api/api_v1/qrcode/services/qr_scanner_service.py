@@ -76,7 +76,7 @@ class QRScannerService:
         user_id = data['user_id']
         
         # Проверяем пользователя
-        user = self.db.query(User).get(user_id)
+        user = self.db.get(User, user_id)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

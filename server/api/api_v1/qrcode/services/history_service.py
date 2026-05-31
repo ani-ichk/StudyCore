@@ -116,7 +116,7 @@ class HistoryService:
         Returns:
             Словарь со статистикой
         """
-        user = self.db.query(User).get(user_id)
+        user = self.db.get(User, user_id)
         if not user:
             return {'error': 'Пользователь не найден'}
         
@@ -199,7 +199,7 @@ class HistoryService:
         users_stats = {}
         for event in events:
             if event.user_id not in users_stats:
-                user = self.db.query(User).get(event.user_id)
+                user = self.db.get(User, event.user_id)
                 users_stats[event.user_id] = {
                     "user_name": f"{user.surname} {user.name}" if user else "Неизвестный",
                     "entries": 0,
