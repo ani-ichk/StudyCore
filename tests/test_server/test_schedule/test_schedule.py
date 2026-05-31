@@ -1,4 +1,4 @@
-"Тесты для расписания"
+"Тестовый модуль для системы расписаний"
 
 from starlette.testclient import TestClient
 from tests.test_server.conftest import parse_iso_z

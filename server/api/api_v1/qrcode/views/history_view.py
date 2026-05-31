@@ -55,7 +55,7 @@ async def get_my_history(
     limit: int = Query(50, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(["student", "teacher", "parent"]))
+    current_user: User = Depends(require_roles(["student", "teacher", "admin", "staff"]))
 ):
     """
     Получение своей истории посещений.
@@ -101,7 +101,7 @@ async def get_history_by_date_range(
     date_to: date = Query(..., description="Конечная дата (ГГГГ-ММ-ДД)"),
     user_id: Optional[int] = Query(None, description="ID пользователя для фильтрации"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(["admin", "teacher"]))
+    current_user: User = Depends(require_roles(["admin", "teacher", "admin"]))
 ):
     """
     Получение истории посещений за диапазон дат.

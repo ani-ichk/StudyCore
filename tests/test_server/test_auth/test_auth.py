@@ -1,4 +1,4 @@
-"Тест модуля аутентификации"
+"Тестовый модуль системы аутентификации"
 
 from starlette.testclient import TestClient
 from tests.test_server.conftest import restore_admin

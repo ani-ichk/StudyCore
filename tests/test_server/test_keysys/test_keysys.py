@@ -1,4 +1,4 @@
-"""Тест системы ключей"""
+"""Тестовый модуль системы ключей"""
 
 from starlette.testclient import TestClient
 

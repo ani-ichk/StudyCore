@@ -35,7 +35,7 @@ class QRGeneratorService:
             ValueError: Если пользователь не найден
         """
         # Проверяем существование пользователя
-        user = self.db.query(User).get(user_id)
+        user = self.db.get(User, user_id)
         if not user:
             raise ValueError(f"Пользователь с ID {user_id} не найден")
         
@@ -130,7 +130,7 @@ class QRGeneratorService:
         Returns:
             True если успешно, False если QR-код не найден
         """
-        qr_record = self.db.query(QRCode).get(qr_id)
+        qr_record = self.db.get(QRCode, qr_id)
         if qr_record:
             qr_record.expires_at = datetime.now() - timedelta(minutes=1)
             self.db.commit()
@@ -147,7 +147,7 @@ class QRGeneratorService:
         Returns:
             Объект QRCode или None
         """
-        return self.db.query(QRCode).get(qr_id)
+        return self.db.get(QRCode, qr_id)
     
     def validate_qr_ownership(self, qr_id: int, user_id: int) -> bool:
         """

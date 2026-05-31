@@ -1,4 +1,4 @@
-"""Тесты для библиотеки"""
+"""Тестовый модуль системы библиотеки"""
 
 from tests.test_server.conftest import parse_iso_z
 from starlette.testclient import TestClient
